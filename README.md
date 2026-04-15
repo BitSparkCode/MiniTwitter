@@ -1,5 +1,13 @@
 # 🐣 MiniTwitter
 
+![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6?logo=typescript&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)
+![Jest](https://img.shields.io/badge/Tests-87%20passing-C21325?logo=jest&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 A full-stack mini social platform built with Node.js, TypeScript, PostgreSQL, and a vanilla TypeScript SPA frontend.
 
 > Created by **Moritz Maier** · [GitHub Repo](https://github.com/BitSparkCode/MiniTwitter)
@@ -155,3 +163,11 @@ MiniTwitter/
 ├── docker-compose.yml
 └── .env.example
 ```
+
+---
+
+## Testing
+
+Backend test suite — **87 tests across 9 suites**, all passing.
+
+See **[TESTING.md](./TESTING.md)** for full details: running tests, coverage report, and test structure.
