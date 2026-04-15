@@ -1,13 +1,13 @@
-import { getSession, clearSession } from '../main';
+import { getSession, clearSession, navigate } from '../main';
 export function renderNavbar() {
     const nav = document.getElementById('navbar');
     const session = getSession();
     if (!session) {
-        nav.innerHTML = `<span class="brand">� MiniTwitter</span><div class="nav-links"></div>`;
+        nav.innerHTML = `<span class="brand">🐣 MiniTwitter</span><div class="nav-links"></div>`;
         return;
     }
     nav.innerHTML = `
-    <span class="brand">� MiniTwitter</span>
+    <span class="brand">🐣 MiniTwitter</span>
     <div class="nav-links">
       <button data-nav="feed">Feed</button>
       <button data-nav="profile">@${session.username}</button>
@@ -18,11 +18,9 @@ export function renderNavbar() {
         const page = btn.dataset.nav;
         if (window.location.hash === `#${page}`)
             btn.classList.add('active');
-        btn.addEventListener('click', () => {
-            window.location.hash = page;
-        });
+        btn.addEventListener('click', () => { void navigate(page); });
     });
-    document.getElementById('btn-logout').addEventListener('click', async () => {
+    document.getElementById('btn-logout').addEventListener('click', () => {
         clearSession();
         window.location.hash = 'login';
     });

@@ -15,6 +15,10 @@ export async function renderFeed(): Promise<void> {
         <button class="btn-primary" id="btn-post" disabled>Post</button>
       </div>
     </div>` : ''}
+    <div class="feed-context">
+      <span class="feed-context-icon">🌐</span>
+      <span class="feed-context-label">All posts &mdash; from everyone</span>
+    </div>
     <div id="feed-list"><div class="spinner"></div></div>
   `;
 
@@ -39,10 +43,7 @@ export async function renderFeed(): Promise<void> {
         textarea.value = '';
         charCount.textContent = '0 / 280';
         postBtn.disabled = true;
-        const card = createPostCard({
-          post,
-          username: session.username,
-        });
+        const card = createPostCard({ post, username: session.username });
         const list = document.getElementById('feed-list')!;
         list.insertBefore(card, list.firstChild);
       } catch (err) {
@@ -71,11 +72,24 @@ export async function renderFeed(): Promise<void> {
     return;
   }
 
+  const uniqueUserIds = [...new Set(posts.map((p) => p.userId))];
+  const usernameMap = new Map<number, string>();
+  await Promise.all(
+    uniqueUserIds.map(async (id) => {
+      try {
+        const u = await api.users.getUser(id);
+        usernameMap.set(id, u.username);
+      } catch {
+        usernameMap.set(id, `User #${id}`);
+      }
+    })
+  );
+
   feedList.innerHTML = '';
   posts.forEach((post) => {
     const card = createPostCard({
       post,
-      username: `User_${post.userId}`,
+      username: usernameMap.get(post.userId) ?? `User #${post.userId}`,
     });
     feedList.appendChild(card);
   });

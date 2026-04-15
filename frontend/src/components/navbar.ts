@@ -24,8 +24,8 @@ export function renderNavbar(): void {
     btn.addEventListener('click', () => { void navigate(page); });
   });
 
-  document.getElementById('btn-logout')!.addEventListener('click', async () => {
+  document.getElementById('btn-logout')!.addEventListener('click', () => {
     clearSession();
-    await navigate('login');
+    window.location.hash = 'login';
   });
 }

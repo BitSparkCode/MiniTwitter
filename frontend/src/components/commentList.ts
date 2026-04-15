@@ -12,12 +12,12 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(h / 24)}d`;
 }
 
-function buildCommentHTML(c: Comment, canModify: boolean): string {
+function buildCommentHTML(c: Comment, canModify: boolean, username = `User #${c.userId}`): string {
   return `
     <div class="comment-item" data-comment-id="${c.id}">
       <div class="comment-body">
         <div class="comment-meta">
-          <span class="comment-author" data-user-id="${c.userId}">User #${c.userId}</span>
+          <span class="comment-author" data-user-id="${c.userId}">@${escapeHtml(username)}</span>
           <span class="comment-time">${timeAgo(c.createdAt)}</span>
         </div>
         <div class="comment-content" id="comment-content-${c.id}">${escapeHtml(c.content)}</div>
@@ -44,7 +44,8 @@ function escapeHtml(str: string): string {
 
 export async function renderCommentList(
   container: HTMLElement,
-  postId: number
+  postId: number,
+  onCountChange?: (delta: number) => void
 ): Promise<void> {
   const session = getSession();
   container.innerHTML = '<div class="spinner"></div>';
@@ -57,12 +58,25 @@ export async function renderCommentList(
     return;
   }
 
+  const uniqueUserIds = [...new Set(comments.map((c) => c.userId))];
+  const usernameMap = new Map<number, string>();
+  await Promise.all(
+    uniqueUserIds.map(async (id) => {
+      try {
+        const u = await api.users.getUser(id);
+        usernameMap.set(id, u.username);
+      } catch {
+        usernameMap.set(id, `User #${id}`);
+      }
+    })
+  );
+
   const listHTML = comments
     .map((c) => {
       const canModify =
         session !== null &&
         (c.userId === session.id || ['moderator', 'admin'].includes(session.role));
-      return buildCommentHTML(c, canModify);
+      return buildCommentHTML(c, canModify, usernameMap.get(c.userId));
     })
     .join('');
 
@@ -88,10 +102,11 @@ export async function renderCommentList(
         input.value = '';
         const canModify = c.userId === session.id;
         const div = document.createElement('div');
-        div.innerHTML = buildCommentHTML(c, canModify);
+        div.innerHTML = buildCommentHTML(c, canModify, session.username);
         const commentEl = div.firstElementChild as HTMLElement;
         container.insertBefore(commentEl, btn.parentElement!);
-        attachCommentHandlers(commentEl, c.id, session);
+        attachCommentHandlers(commentEl, c.id, session, onCountChange);
+        onCountChange?.(1);
       } catch (err) {
         alert(err instanceof ApiError ? err.message : 'Failed to post comment');
       } finally {
@@ -105,14 +120,15 @@ export async function renderCommentList(
 
   container.querySelectorAll<HTMLElement>('.comment-item').forEach((el) => {
     const id = Number(el.dataset.commentId);
-    attachCommentHandlers(el, id, session);
+    attachCommentHandlers(el, id, session, onCountChange);
   });
 }
 
 function attachCommentHandlers(
   el: HTMLElement,
   commentId: number,
-  session: ReturnType<typeof getSession>
+  session: ReturnType<typeof getSession>,
+  onCountChange?: (delta: number) => void
 ): void {
   el.querySelector('.comment-author')?.addEventListener('click', () => {
     const userId = (el.querySelector('.comment-author') as HTMLElement).dataset.userId;
@@ -153,6 +169,7 @@ function attachCommentHandlers(
     try {
       await api.comments.delete(commentId);
       el.remove();
+      onCountChange?.(-1);
     } catch (err) {
       alert(err instanceof ApiError ? err.message : 'Failed to delete');
     }

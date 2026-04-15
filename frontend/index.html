@@ -397,12 +397,100 @@
       }
       .role-badge.admin { color: #ffd700; border-color: #ffd70055; }
       .role-badge.moderator { color: #a78bfa; border-color: #a78bfa55; }
+
+      /* Feed context banner */
+      .feed-context {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        margin-bottom: 16px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+      .feed-context-icon { font-size: 16px; }
+      .feed-context-label { color: var(--text); }
+
+      /* Demo accounts */
+      .demo-accounts {
+        margin-top: 20px;
+        padding: 14px 16px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+      }
+      .demo-accounts-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 10px;
+      }
+      .demo-rows { display: flex; flex-direction: column; gap: 6px; }
+      .demo-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        transition: border-color 0.15s;
+      }
+      .demo-row:hover { border-color: var(--primary); }
+      .demo-username { font-weight: 700; font-size: 14px; min-width: 100px; }
+      .demo-username.admin { color: #ffd700; }
+      .demo-username.mod { color: #a78bfa; }
+      .demo-pass {
+        flex: 1;
+        font-family: monospace;
+        font-size: 12px;
+        color: var(--text-muted);
+        letter-spacing: 0.03em;
+      }
+      .demo-login-btn {
+        background: transparent;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.15s;
+      }
+      .demo-login-btn:hover { background: var(--primary); color: #fff; }
+
+      /* Footer */
+      #app { display: flex; flex-direction: column; min-height: 100vh; }
+      #page { flex: 1; }
+      footer {
+        text-align: center;
+        padding: 16px;
+        font-size: 12px;
+        color: var(--text-muted);
+        border-top: 1px solid var(--border);
+        margin-top: 40px;
+      }
+      footer a { color: var(--text-muted); }
+      footer a:hover { color: var(--primary); text-decoration: none; }
     </style>
   </head>
   <body>
     <div id="app">
       <nav id="navbar"></nav>
       <div id="page"></div>
+      <footer>
+        Created by Moritz Maier
+        &nbsp;&middot;&nbsp;
+        <a href="https://github.com/BitSparkCode/MiniTwitter" target="_blank" rel="noopener">GitHub Repo</a>
+      </footer>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

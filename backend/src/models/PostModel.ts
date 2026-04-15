@@ -6,6 +6,7 @@ export class PostModel implements IPost {
   public readonly content: string;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
+  public readonly commentCount: number;
 
   constructor(data: IPost) {
     this.id = data.id;
@@ -13,5 +14,6 @@ export class PostModel implements IPost {
     this.content = data.content;
     this.createdAt = data.createdAt;
     this.updatedAt = data.updatedAt;
+    this.commentCount = data.commentCount;
   }
 }

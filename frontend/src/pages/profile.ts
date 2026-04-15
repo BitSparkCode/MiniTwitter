@@ -33,13 +33,8 @@ export async function renderProfile(userId?: number): Promise<void> {
       const me = await api.users.getMe();
       profileUser = { ...me, createdAt: me.createdAt };
     } else {
-      activity = await api.users.getActivity(targetId);
-      profileUser = {
-        id: targetId,
-        username: `User #${targetId}`,
-        role: 'user',
-        createdAt: new Date().toISOString(),
-      };
+      const u = await api.users.getUser(targetId);
+      profileUser = { id: u.id, username: u.username, role: u.role, createdAt: u.createdAt };
     }
     activity = await api.users.getActivity(targetId);
   } catch {
@@ -79,6 +74,11 @@ export async function renderProfile(userId?: number): Promise<void> {
         <div class="profile-stat"><strong>${activity!.comments.length}</strong> Comments</div>
         <div class="profile-stat">Joined <strong>${timeAgo(profileUser.createdAt)}</strong></div>
       </div>
+    </div>
+
+    <div class="feed-context">
+      <span class="feed-context-icon">${isOwnProfile ? '👤' : '🔍'}</span>
+      <span class="feed-context-label">${isOwnProfile ? 'Your posts &amp; comments' : `Posts &amp; comments by @${escapeHtml(profileUser.username)}`}</span>
     </div>
 
     <div class="tabs">
@@ -207,8 +207,9 @@ export async function renderProfile(userId?: number): Promise<void> {
       try {
         const updated = await api.users.updateMe(val);
         setSession({ ...session!, username: updated.username });
+        usernameInput.value = updated.username;
         msgEl.className = 'msg-success';
-        msgEl.textContent = 'Username updated!';
+        msgEl.textContent = `Username updated to @${updated.username}!`;
         msgEl.style.display = 'block';
         page.querySelector('.profile-name')!.textContent = `@${updated.username}`;
         setTimeout(() => { msgEl.style.display = 'none'; }, 3000);

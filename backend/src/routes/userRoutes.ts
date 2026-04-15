@@ -14,6 +14,7 @@ export function createUserRouter(
   router.get('/me', auth, userController.getMe);
   router.put('/me', auth, userController.updateMe);
   router.get('/:id/activity', auth, userController.getUserActivity);
+  router.get('/:id', auth, userController.getUser);
   router.put('/:id/lock', auth, requireRole('admin'), userController.lockUser);
   router.put('/:id/role', auth, requireRole('admin'), userController.setUserRole);
 

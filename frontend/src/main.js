@@ -31,6 +31,11 @@ async function tryRestoreSession() {
     }
 }
 export async function navigate(path) {
+    const current = window.location.hash.slice(1) || 'feed';
+    if (current === path && !['login', 'register'].includes(path)) {
+        await route();
+        return;
+    }
     _navigating = true;
     window.location.hash = path;
     try {
@@ -47,10 +52,12 @@ async function route() {
     const publicPages = ['login', 'register'];
     if (!_session && !publicPages.includes(page)) {
         window.location.hash = 'login';
+        renderLogin();
         return;
     }
     if (_session && (page === 'login' || page === 'register')) {
         window.location.hash = 'feed';
+        await renderFeed();
         return;
     }
     switch (page) {

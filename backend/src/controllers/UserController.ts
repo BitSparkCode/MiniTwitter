@@ -59,7 +59,7 @@ export class UserController {
       }
       const updated = await this.userRepository.updateUsername(req.user!.id, parsed.data.username);
       if (!updated) throw new NotFoundError('User not found');
-      res.json({ id: updated.id, username: updated.username, role: updated.role });
+      res.json({ id: updated.id, username: updated.username, role: updated.role, createdAt: updated.createdAt });
     } catch (err) {
       if (err instanceof AppError) {
         res.status(err.statusCode).json({ error: err.message });
@@ -68,6 +68,19 @@ export class UserController {
       } else {
         res.status(500).json({ error: 'Internal server error' });
       }
+    }
+  };
+
+  public getUser = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const user = await this.userRepository.findById(Number(req.params.id));
+      if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+      res.json({ id: user.id, username: user.username, role: user.role, createdAt: user.createdAt });
+    } catch {
+      res.status(500).json({ error: 'Internal server error' });
     }
   };
 

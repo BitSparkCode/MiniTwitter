@@ -64,6 +64,7 @@ export const api = {
     users: {
         getMe: () => request('GET', '/users/me'),
         updateMe: (username) => request('PUT', '/users/me', { username }),
+        getUser: (id) => request('GET', `/users/${id}`),
         getActivity: (id) => request('GET', `/users/${id}/activity`),
         lock: (id, isLocked) => request('PUT', `/users/${id}/lock`, { isLocked }),
         setRole: (id, role) => request('PUT', `/users/${id}/role`, { role }),

@@ -41,6 +41,11 @@ async function tryRestoreSession(): Promise<void> {
 }
 
 export async function navigate(path: string): Promise<void> {
+  const current = window.location.hash.slice(1) || 'feed';
+  if (current === path && !['login', 'register'].includes(path)) {
+    await route();
+    return;
+  }
   _navigating = true;
   window.location.hash = path;
   try {

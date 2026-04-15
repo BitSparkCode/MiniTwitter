@@ -40,6 +40,7 @@ export function createPostCard(opts: PostCardOptions): HTMLElement {
   let likeCount = opts.likeCount ?? 0;
   let dislikeCount = opts.dislikeCount ?? 0;
   let userReaction = opts.userReaction ?? null;
+  let commentCount = post.commentCount ?? 0;
 
   const render = () => {
     const activeLike = userReaction?.type === 'like' ? 'active-like' : '';
@@ -70,7 +71,7 @@ export function createPostCard(opts: PostCardOptions): HTMLElement {
         <button class="btn-reaction ${activeLike}" id="btn-like-${post.id}">👍 ${likeCount}</button>
         <button class="btn-reaction ${activeDislike}" id="btn-dislike-${post.id}">👎 ${dislikeCount}</button>
         ` : `<span style="font-size:13px;color:var(--text-muted)">👍 ${likeCount} &nbsp; 👎 ${dislikeCount}</span>`}
-        ${session ? `<button class="btn-comment-toggle" id="btn-comments-${post.id}">💬 Comments</button>` : ''}
+        ${session ? `<button class="btn-comment-toggle" id="btn-comments-${post.id}">💬 ${commentCount} Comment${commentCount !== 1 ? 's' : ''}</button>` : `<span style="font-size:13px;color:var(--text-muted)">💬 ${commentCount}</span>`}
       </div>
       <div class="comments-section" id="comments-section-${post.id}" style="display:none"></div>
     `;
@@ -161,7 +162,11 @@ export function createPostCard(opts: PostCardOptions): HTMLElement {
       commentsOpen = !commentsOpen;
       if (commentsOpen) {
         section.style.display = 'block';
-        renderCommentList(section, post.id);
+        renderCommentList(section, post.id, (delta) => {
+          commentCount += delta;
+          const btn = card.querySelector<HTMLButtonElement>(`#btn-comments-${post.id}`);
+          if (btn) btn.textContent = `💬 ${commentCount} Comment${commentCount !== 1 ? 's' : ''}`;
+        });
       } else {
         section.style.display = 'none';
       }

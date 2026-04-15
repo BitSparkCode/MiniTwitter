@@ -18,6 +18,51 @@ export function renderLogin() {
       <div class="switch-link">
         Don't have an account? <a href="#register">Register</a>
       </div>
+      <div class="demo-accounts">
+        <div class="demo-accounts-title">✨ Demo accounts</div>
+        <div class="demo-rows">
+          <div class="demo-row">
+            <div class="demo-row-left">
+              <span class="demo-username admin">admin</span>
+              <span class="role-badge admin">admin</span>
+            </div>
+            <span class="demo-pass">admin123</span>
+            <button class="demo-login-btn" data-user="admin" data-pass="admin123">Login →</button>
+          </div>
+          <div class="demo-row">
+            <div class="demo-row-left">
+              <span class="demo-username mod">moderator</span>
+              <span class="role-badge moderator">moderator</span>
+            </div>
+            <span class="demo-pass">moderator123</span>
+            <button class="demo-login-btn" data-user="moderator" data-pass="moderator123">Login →</button>
+          </div>
+          <div class="demo-row">
+            <div class="demo-row-left">
+              <span class="demo-username">alice</span>
+              <span class="role-badge">user</span>
+            </div>
+            <span class="demo-pass">user123</span>
+            <button class="demo-login-btn" data-user="alice" data-pass="user123">Login →</button>
+          </div>
+          <div class="demo-row">
+            <div class="demo-row-left">
+              <span class="demo-username">bob</span>
+              <span class="role-badge">user</span>
+            </div>
+            <span class="demo-pass">user123</span>
+            <button class="demo-login-btn" data-user="bob" data-pass="user123">Login →</button>
+          </div>
+          <div class="demo-row">
+            <div class="demo-row-left">
+              <span class="demo-username">charlie</span>
+              <span class="role-badge">user</span>
+            </div>
+            <span class="demo-pass">user123</span>
+            <button class="demo-login-btn" data-user="charlie" data-pass="user123">Login →</button>
+          </div>
+        </div>
+      </div>
     </div>
   `;
     const usernameEl = page.querySelector('#login-username');
@@ -57,5 +102,12 @@ export function renderLogin() {
     btn.addEventListener('click', submit);
     [usernameEl, passwordEl].forEach((el) => el.addEventListener('keydown', (e) => { if (e.key === 'Enter')
         submit(); }));
+    page.querySelectorAll('.demo-login-btn').forEach((demoBtn) => {
+        demoBtn.addEventListener('click', () => {
+            usernameEl.value = demoBtn.dataset.user;
+            passwordEl.value = demoBtn.dataset.pass;
+            void submit();
+        });
+    });
     usernameEl.focus();
 }

@@ -41,7 +41,7 @@ function buildCommentHTML(c, canModify) {
 function escapeHtml(str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
-export async function renderCommentList(container, postId) {
+export async function renderCommentList(container, postId, onCountChange) {
     const session = getSession();
     container.innerHTML = '<div class="spinner"></div>';
     let comments;
@@ -82,7 +82,8 @@ export async function renderCommentList(container, postId) {
                 div.innerHTML = buildCommentHTML(c, canModify);
                 const commentEl = div.firstElementChild;
                 container.insertBefore(commentEl, btn.parentElement);
-                attachCommentHandlers(commentEl, c.id, session);
+                attachCommentHandlers(commentEl, c.id, session, onCountChange);
+                onCountChange?.(1);
             }
             catch (err) {
                 alert(err instanceof ApiError ? err.message : 'Failed to post comment');
@@ -97,10 +98,10 @@ export async function renderCommentList(container, postId) {
     }
     container.querySelectorAll('.comment-item').forEach((el) => {
         const id = Number(el.dataset.commentId);
-        attachCommentHandlers(el, id, session);
+        attachCommentHandlers(el, id, session, onCountChange);
     });
 }
-function attachCommentHandlers(el, commentId, session) {
+function attachCommentHandlers(el, commentId, session, onCountChange) {
     el.querySelector('.comment-author')?.addEventListener('click', () => {
         const userId = el.querySelector('.comment-author').dataset.userId;
         if (userId)
@@ -142,6 +143,7 @@ function attachCommentHandlers(el, commentId, session) {
         try {
             await api.comments.delete(commentId);
             el.remove();
+            onCountChange?.(-1);
         }
         catch (err) {
             alert(err instanceof ApiError ? err.message : 'Failed to delete');

@@ -84,6 +84,7 @@ export const api = {
   users: {
     getMe: () => request<UserMe>('GET', '/users/me'),
     updateMe: (username: string) => request<UserMe>('PUT', '/users/me', { username }),
+    getUser: (id: number) => request<UserProfile>('GET', `/users/${id}`),
     getActivity: (id: number) => request<{ posts: Post[]; comments: Comment[] }>('GET', `/users/${id}/activity`),
     lock: (id: number, isLocked: boolean) =>
       request<{ id: number; username: string; isLocked: boolean }>('PUT', `/users/${id}/lock`, { isLocked }),
@@ -98,6 +99,7 @@ export interface Post {
   content: string;
   createdAt: string;
   updatedAt: string;
+  commentCount: number;
 }
 
 export interface Comment {
@@ -118,6 +120,13 @@ export interface Reaction {
 }
 
 export interface UserMe {
+  id: number;
+  username: string;
+  role: string;
+  createdAt: string;
+}
+
+export interface UserProfile {
   id: number;
   username: string;
   role: string;

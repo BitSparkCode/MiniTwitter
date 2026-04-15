@@ -1,5 +1,5 @@
 import { api, ApiError } from '../api/client';
-import { setSession, navigate } from '../main';
+import { setSession } from '../main';
 
 export function renderRegister(): void {
   const page = document.getElementById('page')!;
@@ -57,7 +57,7 @@ export function renderRegister(): void {
       localStorage.setItem('token', token);
       const me = await api.users.getMe();
       setSession(me);
-      await navigate('profile');
+      window.location.hash = 'profile';
     } catch (err) {
       showMsg(err instanceof ApiError ? err.message : 'Registration failed', 'error');
     } finally {
