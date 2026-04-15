@@ -10,8 +10,6 @@
 
 A full-stack mini social platform built with Node.js, TypeScript, PostgreSQL, and a vanilla TypeScript SPA frontend.
 
-> Created by **Moritz Maier** · [GitHub Repo](https://github.com/BitSparkCode/MiniTwitter)
-
 ---
 
 ## Tech Stack
