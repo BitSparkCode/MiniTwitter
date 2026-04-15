@@ -22,7 +22,7 @@ A full-stack mini social platform built with Node.js, TypeScript, PostgreSQL, an
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/MiniTwitter.git
+git clone https://github.com/BitSparkCode/MiniTwitter.git
 cd MiniTwitter
 ```
 
