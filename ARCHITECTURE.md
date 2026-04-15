@@ -137,20 +137,6 @@ classDiagram
         +setUserRole(req, res) void
     }
 
-    %% ── Errors ───────────────────────────────────────────────
-    class AppError {
-        +number statusCode
-    }
-    class NotFoundError
-    class ForbiddenError
-    class UnauthorizedError
-    class ConflictError
-
-    AppError <|-- NotFoundError
-    AppError <|-- ForbiddenError
-    AppError <|-- UnauthorizedError
-    AppError <|-- ConflictError
-
     %% ── Dependencies ─────────────────────────────────────────
     AuthController --> AuthService
     PostController --> PostService
