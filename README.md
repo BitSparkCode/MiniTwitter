@@ -163,6 +163,11 @@ MiniTwitter/
 ├── docker-compose.yml
 └── .env.example
 ```
+---
+
+## Architecture
+
+See **[ARCHITECTURE.md](./ARCHITECTURE.md)** for the full class diagram — controllers, services, repositories, interfaces, and error hierarchy.
 
 ---
 
