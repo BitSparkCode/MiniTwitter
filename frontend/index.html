@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MiniTwitter</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --bg: #0f1117;
+        --surface: #16181c;
+        --surface2: #1e2028;
+        --border: #2f3336;
+        --primary: #1d9bf0;
+        --primary-hover: #1a8cd8;
+        --danger: #f4212e;
+        --text: #e7e9ea;
+        --text-muted: #71767b;
+        --like: #f91880;
+        --dislike: #ff6b35;
+        --radius: 12px;
+        --radius-sm: 6px;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      a { color: var(--primary); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+
+      button {
+        cursor: pointer;
+        font-family: inherit;
+        border: none;
+        outline: none;
+        transition: background 0.15s, opacity 0.15s;
+      }
+
+      input, textarea {
+        font-family: inherit;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        font-size: 15px;
+        width: 100%;
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      input:focus, textarea:focus { border-color: var(--primary); }
+      textarea { resize: vertical; min-height: 80px; }
+
+      /* Layout */
+      #app { display: flex; flex-direction: column; min-height: 100vh; }
+
+      /* Navbar */
+      nav#navbar {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 0 20px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      nav#navbar .brand {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary);
+        letter-spacing: -0.5px;
+      }
+      nav#navbar .nav-links {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      nav#navbar .nav-links button {
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 14px;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: 20px;
+      }
+      nav#navbar .nav-links button:hover { background: var(--surface2); color: var(--text); }
+      nav#navbar .nav-links button.active { color: var(--primary); }
+      nav#navbar .nav-links button.btn-logout {
+        color: var(--danger);
+      }
+      nav#navbar .nav-links button.btn-logout:hover { background: rgba(244,33,46,0.1); }
+
+      /* Page container */
+      #page {
+        flex: 1;
+        max-width: 600px;
+        margin: 0 auto;
+        width: 100%;
+        padding: 24px 16px;
+      }
+
+      /* Auth forms */
+      .auth-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 36px 32px;
+        max-width: 400px;
+        margin: 60px auto 0;
+      }
+      .auth-card h1 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        color: var(--text);
+      }
+      .auth-card .field { margin-bottom: 16px; }
+      .auth-card label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+      }
+      .auth-card .btn-primary {
+        width: 100%;
+        margin-top: 8px;
+        background: var(--primary);
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        padding: 10px;
+        border-radius: 20px;
+      }
+      .auth-card .btn-primary:hover { background: var(--primary-hover); }
+      .auth-card .switch-link {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+
+      /* Error/success */
+      .msg-error {
+        background: rgba(244,33,46,0.12);
+        border: 1px solid rgba(244,33,46,0.3);
+        color: #ff6b6b;
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        font-size: 14px;
+        margin-bottom: 14px;
+      }
+      .msg-success {
+        background: rgba(29,155,240,0.12);
+        border: 1px solid rgba(29,155,240,0.3);
+        color: var(--primary);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        font-size: 14px;
+        margin-bottom: 14px;
+      }
+
+      /* Compose box */
+      .compose-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .compose-box textarea { margin-bottom: 10px; }
+      .compose-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .char-count {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+      .char-count.warn { color: #ffd700; }
+      .char-count.over { color: var(--danger); }
+
+      /* Buttons */
+      .btn-primary {
+        background: var(--primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 8px 18px;
+        border-radius: 20px;
+      }
+      .btn-primary:hover { background: var(--primary-hover); }
+      .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+      .btn-ghost {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 13px;
+        padding: 5px 12px;
+        border-radius: 20px;
+      }
+      .btn-ghost:hover { border-color: var(--text-muted); color: var(--text); }
+
+      .btn-danger {
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--danger);
+        font-size: 13px;
+        padding: 5px 12px;
+        border-radius: 20px;
+      }
+      .btn-danger:hover { background: rgba(244,33,46,0.1); }
+
+      /* Post card */
+      .post-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        margin-bottom: 12px;
+        transition: border-color 0.15s;
+      }
+      .post-card:hover { border-color: var(--text-muted); }
+      .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+      }
+      .post-meta { display: flex; flex-direction: column; gap: 2px; }
+      .post-author {
+        font-weight: 600;
+        font-size: 15px;
+        color: var(--text);
+        cursor: pointer;
+      }
+      .post-author:hover { color: var(--primary); }
+      .post-time { font-size: 12px; color: var(--text-muted); }
+      .post-content { font-size: 15px; line-height: 1.5; margin-bottom: 12px; white-space: pre-wrap; }
+      .post-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      .btn-reaction {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 13px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.15s;
+      }
+      .btn-reaction:hover { border-color: var(--like); color: var(--like); }
+      .btn-reaction.active-like { border-color: var(--like); color: var(--like); background: rgba(249,24,128,0.08); }
+      .btn-reaction.active-dislike { border-color: var(--dislike); color: var(--dislike); background: rgba(255,107,53,0.08); }
+      .btn-comment-toggle {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 13px;
+        padding: 4px 12px;
+        border-radius: 20px;
+      }
+      .btn-comment-toggle:hover { border-color: var(--primary); color: var(--primary); }
+
+      /* Edit inline */
+      .post-edit-area {
+        margin-bottom: 10px;
+      }
+      .post-edit-area textarea { margin-bottom: 6px; }
+      .edit-actions { display: flex; gap: 6px; }
+
+      /* Comment section */
+      .comments-section {
+        margin-top: 12px;
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+      }
+      .comment-item {
+        display: flex;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .comment-item:last-child { border-bottom: none; }
+      .comment-body { flex: 1; }
+      .comment-meta {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .comment-author {
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .comment-author:hover { color: var(--primary); }
+      .comment-time { font-size: 11px; color: var(--text-muted); }
+      .comment-content { font-size: 14px; line-height: 1.4; white-space: pre-wrap; }
+      .comment-actions { display: flex; gap: 4px; margin-top: 4px; }
+
+      .comment-compose {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .comment-compose input { flex: 1; }
+
+      /* Profile page */
+      .profile-header {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      .profile-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+      .profile-role {
+        display: inline-block;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 12px;
+        padding: 2px 10px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+      }
+      .profile-stats { display: flex; gap: 20px; }
+      .profile-stat { font-size: 14px; color: var(--text-muted); }
+      .profile-stat strong { color: var(--text); font-weight: 700; }
+
+      .profile-edit-form { margin-top: 16px; display: flex; gap: 8px; }
+      .profile-edit-form input { max-width: 240px; }
+
+      /* Tabs */
+      .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+      .tab-btn {
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-muted);
+        font-size: 14px;
+        font-weight: 600;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .tab-btn:hover { color: var(--text); }
+      .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+      /* Spinner */
+      .spinner {
+        display: flex;
+        justify-content: center;
+        padding: 40px;
+      }
+      .spinner::after {
+        content: '';
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--border);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+      }
+      .empty-state h3 { font-size: 20px; margin-bottom: 8px; color: var(--text); }
+      .empty-state p { font-size: 14px; }
+
+      /* Admin badge */
+      .role-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 10px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+      }
+      .role-badge.admin { color: #ffd700; border-color: #ffd70055; }
+      .role-badge.moderator { color: #a78bfa; border-color: #a78bfa55; }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <nav id="navbar"></nav>
+      <div id="page"></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
