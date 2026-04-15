@@ -10,7 +10,7 @@
 
 A full-stack mini social platform built with Node.js, TypeScript, PostgreSQL, and a vanilla TypeScript SPA frontend.
 
-<img width="1920" height="1208" alt="image" src="https://github.com/user-attachments/assets/7f1e14fc-5c53-479a-839a-c67400588d92" />
+<img width="1468" height="836" alt="2026-04-15_13-48-27 (2)" src="https://github.com/user-attachments/assets/2f3bbf64-65a5-4ab2-9d5a-0c9c422b00ee" />
 
 ---
 
